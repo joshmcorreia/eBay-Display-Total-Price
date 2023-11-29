@@ -13,6 +13,8 @@
 
 // NOTE: Does not support "Local pickup only" by design. If you want to pick items up locally you probably shouldn't be using eBay.
 
+// TODO: Support active bids breaking the price of the item.
+
 /**
  * @param {String} input_string
  * @returns {*}
@@ -51,7 +53,7 @@ function add_comma_to_dollar_amount(input_string) {
  */
 function get_primary_BIN_price() {
   let primary_BIN_price = document.querySelector(".x-bin-price .x-price-primary")?.textContent;
-  let approximate_primary_BIN_price = document.querySelector(".x-price-approx__price")?.textContent;
+  let approximate_primary_BIN_price = document.querySelector(".x-bin-price .x-price-approx__price")?.textContent;
   let BIN_price = approximate_primary_BIN_price || primary_BIN_price;
   if (BIN_price) {
     BIN_price = get_dollar_amount_from_string(BIN_price);
@@ -65,10 +67,12 @@ function get_primary_BIN_price() {
  */
 function get_primary_bid_price() {
   let primary_bid_price = document.querySelector(".x-bid-price .x-price-primary")?.textContent;
-  if (primary_bid_price) {
-    primary_bid_price = get_dollar_amount_from_string(primary_bid_price);
+  let approximate_primary_bid_price = document.querySelector(".x-bid-price .x-price-approx__price")?.textContent;
+  let bid_price = approximate_primary_bid_price || primary_bid_price;
+  if (bid_price) {
+    bid_price = get_dollar_amount_from_string(bid_price);
   }
-  return primary_bid_price;
+  return bid_price;
 }
 
 /**

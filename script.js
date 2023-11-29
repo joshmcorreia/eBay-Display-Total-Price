@@ -16,6 +16,9 @@
  * @returns {*}
  */
 function get_dollar_amount_from_string(input_string) {
+  if (input_string == "Free") {
+    return 0;
+  }
   // console.log(`before comma removed: ${input_string}`);
   input_string = input_string.replace(/,/g, ''); // remove the commas from large numbers
   // console.log(`after comma removed: ${input_string}`);
@@ -36,6 +39,9 @@ function get_dollar_amount_from_string(input_string) {
  * @returns {String}
  */
 function add_comma_to_dollar_amount(input_string) {
+  if (input_string === undefined) {
+    return undefined;
+  }
   // Taken from https://stackoverflow.com/a/2901298
   return input_string.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -43,86 +49,105 @@ function add_comma_to_dollar_amount(input_string) {
 /**
  * @returns {Number}
  */
-function get_primary_price() {
-  let primary_price = document.querySelector(".x-bin-price .x-price-primary")?.textContent;
-  if (primary_price) {
-    primary_price = get_dollar_amount_from_string(primary_price);
+function get_primary_BIN_price() {
+  let primary_BIN_price = document.querySelector(".x-bin-price .x-price-primary")?.textContent;
+  console.log(`ebay - primary_BIN_price: ${primary_BIN_price}`);
+  let approximate_primary_BIN_price = document.querySelector(".x-price-approx__price")?.textContent;
+  console.log(`ebay - approximate_primary_BIN_price: ${approximate_primary_BIN_price}`);
+  let BIN_price = approximate_primary_BIN_price || primary_BIN_price;
+  console.log(`ebay - BIN_price: ${BIN_price}`);
+  if (BIN_price) {
+    BIN_price = get_dollar_amount_from_string(BIN_price);
+    console.log(`ebay - BIN_price: ${BIN_price}`);
   }
-  console.log(`ebay - primary_price: ${primary_price}`);
-  return primary_price;
+  return BIN_price;
 }
 
 /**
  * @returns {Number}
  */
-function get_approximate_primary_price() {
-  let approximate_primary_price = document.querySelector(".x-price-approx__price")?.textContent;
-  if (approximate_primary_price) {
-    approximate_primary_price = get_dollar_amount_from_string(approximate_primary_price);
+function get_primary_bid_price() {
+  let primary_bid_price = document.querySelector(".x-bid-price .x-price-primary")?.textContent;
+  if (primary_bid_price) {
+    primary_bid_price = get_dollar_amount_from_string(primary_bid_price);
   }
-  console.log(`ebay - approximate_primary_price: ${approximate_primary_price}`);
-  return approximate_primary_price;
+  console.log(`ebay - primary_bid_price: ${primary_bid_price}`);
+  return primary_bid_price;
 }
 
 /**
  * @returns {Number}
  */
 function get_shipping_price() {
-  let shipping_price = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans")?.textContent;
-  if (shipping_price) {
-    shipping_price = get_dollar_amount_from_string(shipping_price);
-  }
-  console.log(`ebay - shipping_price: ${shipping_price}`);
-  return shipping_price
+  let primary_shipping_price = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans")?.textContent;
+  console.log(`ebay - get_shipping_price() - primary_shipping_price: ${primary_shipping_price}`);
+  let primary_shipping_price_approximate = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans--SECONDARY.ux-textspans--BOLD")?.textContent;
+  console.log(`ebay - get_shipping_price() - primary_shipping_price_approximate: ${primary_shipping_price_approximate}`);
+  let shipping_price = primary_shipping_price_approximate || primary_shipping_price;
+  console.log(`ebay - get_shipping_price() - shipping_price: ${shipping_price}`);
+  shipping_price = get_dollar_amount_from_string(shipping_price);
+  console.log(`ebay - get_shipping_price() - shipping_price: ${shipping_price}`);
+  return shipping_price;
 }
 
 /**
- * @returns {Number}
+ * @param {Number} item_price
+ * @param {Number} shipping_price
+ * @returns {String}
  */
-function get_shipping_price_approximate() {
-  let shipping_price_approximate = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans--SECONDARY")?.textContent;
-  if (shipping_price_approximate) {
-    shipping_price_approximate = get_dollar_amount_from_string(shipping_price_approximate);
+function get_total_price(item_price, shipping_price) {
+  if (item_price === undefined) {
+    return undefined;
   }
-  console.log(`ebay - shipping_price_approximate: ${shipping_price_approximate}`);
-  return shipping_price_approximate
+  console.log(`ebay - get_total_price() - item_price: ${item_price}`);
+  console.log(`ebay - get_total_price() - shipping_price: ${shipping_price}`);
+  let total_price = item_price + shipping_price;
+  total_price = (Math.round(total_price * 100) / 100).toFixed(2); // always show 2 decimals
+  console.log(`ebay - get_total_price() - total_price: ${total_price}`);
+  total_price = add_comma_to_dollar_amount(total_price);
+  console.log(`ebay - get_total_price() - total_price: ${total_price}`);
+  return total_price;
+}
+
+function add_total_bid_price_to_page(total_bid_price) {
+  console.log("ebay - Adding bid price");
+  let total_bid_price_div = document.createElement('div');
+  total_bid_price_div.style = "color:green";
+  total_bid_price_div.className = "x-price-primary";
+  total_bid_price_div.textContent = `US $${total_bid_price}`;
+  document.querySelector(".x-price-section").prepend(total_bid_price_div);
+}
+
+function add_total_BIN_price_to_page(total_BIN_price) {
+  console.log("ebay - Adding BIN price");
+  let total_BIN_price_div = document.createElement('div');
+  total_BIN_price_div.style = "color:green";
+  total_BIN_price_div.className = "x-price-primary";
+  total_BIN_price_div.textContent = `US $${total_BIN_price}`;
+  document.querySelector(".x-bin-price__content").prepend(total_BIN_price_div);
 }
 
 /**
  * @returns {}
  */
 function add_total_price_to_page() {
-  var primary_price = get_primary_price()
-  var approximate_primary_price = get_approximate_primary_price()
-  var shipping_price = get_shipping_price()
-  var shipping_price_approximate = get_shipping_price_approximate()
+  let primary_BIN_price = get_primary_BIN_price()
+  let primary_bid_price = get_primary_bid_price()
+  let shipping_price = get_shipping_price()
 
+  let total_BIN_price = get_total_price(primary_BIN_price, shipping_price);
+  console.log(`ebay - total_BIN_price: ${total_BIN_price}`);
+  let total_bid_price = get_total_price(primary_bid_price, shipping_price);
+  console.log(`ebay - total_bid_price: ${total_bid_price}`);
 
-  if ((approximate_primary_price != null) && (shipping_price_approximate != null)) {
-    var total_cost = approximate_primary_price + shipping_price_approximate;
-    console.log(`ebay - Total cost: ${total_cost}`);
+  if (total_BIN_price !== undefined) {
+    add_total_BIN_price_to_page(total_BIN_price)
   }
-  else {
-    var total_cost = primary_price + shipping_price;
-    console.log(`ebay - Total cost: ${total_cost}`);
-  }
-
-  total_cost = (Math.round(total_cost * 100) / 100).toFixed(2); // always show 2 decimals
-  total_cost = add_comma_to_dollar_amount(total_cost);
-
-  var total_price_div = document.createElement('div');
-  total_price_div.style = "color:green";
-  total_price_div.className = "x-price-primary";
-  total_price_div.textContent = `US $${total_cost}`;
-  try {
-    document.querySelector(".x-bin-price__content").prepend(total_price_div);
-  } catch(err) {
-    document.querySelector(".x-price-section").prepend(total_price_div);
+  if (total_bid_price !== undefined) {
+    add_total_bid_price_to_page(total_bid_price)
   }
 }
 
 add_total_price_to_page();
 
-// TODO: Does not work with bids
-// TODO: Also need to check with bids + buy it now on same listing
-// TODO: Breaks on local pickup
+// TODO: Check on local pickup

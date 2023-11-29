@@ -21,9 +21,7 @@ function get_dollar_amount_from_string(input_string) {
   if (input_string == "Free") {
     return 0;
   }
-  // console.log(`before comma removed: ${input_string}`);
   input_string = input_string.replace(/,/g, ''); // remove the commas from large numbers
-  // console.log(`after comma removed: ${input_string}`);
   const number_regex = /[+-]?\d+(\.\d+)?/;
   try {
     let regex_match = input_string.match(number_regex).map(function(v) { return parseFloat(v); });
@@ -53,14 +51,11 @@ function add_comma_to_dollar_amount(input_string) {
  */
 function get_primary_BIN_price() {
   let primary_BIN_price = document.querySelector(".x-bin-price .x-price-primary")?.textContent;
-  console.log(`ebay - primary_BIN_price: ${primary_BIN_price}`);
   let approximate_primary_BIN_price = document.querySelector(".x-price-approx__price")?.textContent;
-  console.log(`ebay - approximate_primary_BIN_price: ${approximate_primary_BIN_price}`);
   let BIN_price = approximate_primary_BIN_price || primary_BIN_price;
-  console.log(`ebay - BIN_price: ${BIN_price}`);
   if (BIN_price) {
     BIN_price = get_dollar_amount_from_string(BIN_price);
-    console.log(`ebay - BIN_price: ${BIN_price}`);
+
   }
   return BIN_price;
 }
@@ -73,7 +68,6 @@ function get_primary_bid_price() {
   if (primary_bid_price) {
     primary_bid_price = get_dollar_amount_from_string(primary_bid_price);
   }
-  console.log(`ebay - primary_bid_price: ${primary_bid_price}`);
   return primary_bid_price;
 }
 
@@ -82,13 +76,9 @@ function get_primary_bid_price() {
  */
 function get_shipping_price() {
   let primary_shipping_price = document.querySelector(".d-shipping-minview .ux-labels-values--shipping .ux-labels-values__values .ux-textspans")?.textContent;
-  console.log(`ebay - get_shipping_price() - primary_shipping_price: ${primary_shipping_price}`);
   let primary_shipping_price_approximate = document.querySelector(".d-shipping-minview .ux-labels-values--shipping .ux-labels-values__values .ux-textspans--SECONDARY.ux-textspans--BOLD")?.textContent;
-  console.log(`ebay - get_shipping_price() - primary_shipping_price_approximate: ${primary_shipping_price_approximate}`);
   let shipping_price = primary_shipping_price_approximate || primary_shipping_price;
-  console.log(`ebay - get_shipping_price() - shipping_price: ${shipping_price}`);
   shipping_price = get_dollar_amount_from_string(shipping_price);
-  console.log(`ebay - get_shipping_price() - shipping_price: ${shipping_price}`);
   return shipping_price;
 }
 
@@ -101,13 +91,9 @@ function get_total_price(item_price, shipping_price) {
   if (item_price === undefined) {
     return undefined;
   }
-  console.log(`ebay - get_total_price() - item_price: ${item_price}`);
-  console.log(`ebay - get_total_price() - shipping_price: ${shipping_price}`);
   let total_price = item_price + shipping_price;
   total_price = (Math.round(total_price * 100) / 100).toFixed(2); // always show 2 decimals
-  console.log(`ebay - get_total_price() - total_price: ${total_price}`);
   total_price = add_comma_to_dollar_amount(total_price);
-  console.log(`ebay - get_total_price() - total_price: ${total_price}`);
   return total_price;
 }
 
@@ -116,7 +102,6 @@ function get_total_price(item_price, shipping_price) {
  * @return {}
  */
 function add_total_bid_price_to_page(total_bid_price) {
-  console.log("ebay - Adding bid price");
   let total_bid_price_div = document.createElement('div');
   total_bid_price_div.style = "color:green";
   total_bid_price_div.className = "x-price-primary";
@@ -130,7 +115,6 @@ function add_total_bid_price_to_page(total_bid_price) {
  * @return {}
  */
 function add_total_BIN_price_to_page(total_BIN_price) {
-  console.log("ebay - Adding BIN price");
   let total_BIN_price_div = document.createElement('div');
   total_BIN_price_div.style = "color:green";
   total_BIN_price_div.className = "x-price-primary";
@@ -148,9 +132,7 @@ function add_total_price_to_page() {
   let shipping_price = get_shipping_price()
 
   let total_BIN_price = get_total_price(primary_BIN_price, shipping_price);
-  console.log(`ebay - total_BIN_price: ${total_BIN_price}`);
   let total_bid_price = get_total_price(primary_bid_price, shipping_price);
-  console.log(`ebay - total_bid_price: ${total_bid_price}`);
 
   if (total_BIN_price !== undefined) {
     add_total_BIN_price_to_page(total_BIN_price)

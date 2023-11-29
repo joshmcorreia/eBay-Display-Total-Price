@@ -11,6 +11,8 @@
 // @noframes
 // ==/UserScript==
 
+// NOTE: Does not support "Local pickup only" by design. If you want to pick items up locally you probably shouldn't be using eBay.
+
 /**
  * @param {String} input_string
  * @returns {*}
@@ -79,9 +81,9 @@ function get_primary_bid_price() {
  * @returns {Number}
  */
 function get_shipping_price() {
-  let primary_shipping_price = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans")?.textContent;
+  let primary_shipping_price = document.querySelector(".d-shipping-minview .ux-labels-values--shipping .ux-labels-values__values .ux-textspans")?.textContent;
   console.log(`ebay - get_shipping_price() - primary_shipping_price: ${primary_shipping_price}`);
-  let primary_shipping_price_approximate = document.querySelector(".d-shipping-minview .ux-labels-values__values .ux-textspans--SECONDARY.ux-textspans--BOLD")?.textContent;
+  let primary_shipping_price_approximate = document.querySelector(".d-shipping-minview .ux-labels-values--shipping .ux-labels-values__values .ux-textspans--SECONDARY.ux-textspans--BOLD")?.textContent;
   console.log(`ebay - get_shipping_price() - primary_shipping_price_approximate: ${primary_shipping_price_approximate}`);
   let shipping_price = primary_shipping_price_approximate || primary_shipping_price;
   console.log(`ebay - get_shipping_price() - shipping_price: ${shipping_price}`);
@@ -109,6 +111,10 @@ function get_total_price(item_price, shipping_price) {
   return total_price;
 }
 
+/**
+ * @param {String} total_bid_price
+ * @return {}
+ */
 function add_total_bid_price_to_page(total_bid_price) {
   console.log("ebay - Adding bid price");
   let total_bid_price_div = document.createElement('div');
@@ -116,8 +122,13 @@ function add_total_bid_price_to_page(total_bid_price) {
   total_bid_price_div.className = "x-price-primary";
   total_bid_price_div.textContent = `US $${total_bid_price}`;
   document.querySelector(".x-price-section").prepend(total_bid_price_div);
+  return;
 }
 
+/**
+ * @param {String} total_BIN_price
+ * @return {}
+ */
 function add_total_BIN_price_to_page(total_BIN_price) {
   console.log("ebay - Adding BIN price");
   let total_BIN_price_div = document.createElement('div');
@@ -125,6 +136,7 @@ function add_total_BIN_price_to_page(total_BIN_price) {
   total_BIN_price_div.className = "x-price-primary";
   total_BIN_price_div.textContent = `US $${total_BIN_price}`;
   document.querySelector(".x-bin-price__content").prepend(total_BIN_price_div);
+  return;
 }
 
 /**
@@ -149,5 +161,3 @@ function add_total_price_to_page() {
 }
 
 add_total_price_to_page();
-
-// TODO: Check on local pickup

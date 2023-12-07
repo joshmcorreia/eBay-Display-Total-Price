@@ -107,7 +107,7 @@ function get_total_price(item_price, shipping_price) {
  */
 function add_total_bid_price_to_page(total_bid_price) {
   let total_bid_price_div = document.createElement('div');
-  total_bid_price_div.style = "color:green";
+  total_bid_price_div.style = "color:DodgerBlue";
   total_bid_price_div.className = "x-price-primary";
   total_bid_price_div.textContent = `US $${total_bid_price}`;
   document.querySelector(".x-price-section").prepend(total_bid_price_div);

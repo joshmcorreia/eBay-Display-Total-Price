@@ -110,6 +110,7 @@ function add_total_bid_price_to_page(total_bid_price) {
   total_bid_price_div.style = "color:DodgerBlue";
   total_bid_price_div.className = "x-price-primary";
   total_bid_price_div.textContent = `US $${total_bid_price}`;
+  document.querySelector(".x-price-section").prepend(document.createElement('br'));
   document.querySelector(".x-price-section").prepend(total_bid_price_div);
   return;
 }
@@ -123,6 +124,7 @@ function add_total_BIN_price_to_page(total_BIN_price) {
   total_BIN_price_div.style = "color:green";
   total_BIN_price_div.className = "x-price-primary";
   total_BIN_price_div.textContent = `US $${total_BIN_price}`;
+  document.querySelector(".x-bin-price__content").prepend(document.createElement('br'));
   document.querySelector(".x-bin-price__content").prepend(total_BIN_price_div);
   return;
 }
